@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 03.3 - Fact-checking, Misinformation & Digital Footprints</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --primary: #3b82f6;
+            --accent: #f43f5e;
+            --whatsapp: #25D366;
+            --google: #4285F4;
+            --fb-blue: #1877F2;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --panel-bg: rgba(15, 23, 42, 0.7);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; user-select: none; }
+        
+        /* SCALABLE ROOT FOR 86" SMART BOARDS */
+        html { font-size: 16px; }
+        @media (min-width: 1920px) { html { font-size: 20px; } }
+        @media (min-width: 2560px) { html { font-size: 26px; } }
+        @media (min-width: 3800px) { html { font-size: 36px; } }
+        @media (max-width: 950px) { html { font-size: 12px; } }
+
+        body { background-color: var(--bg-color); color: var(--text-main); overflow: hidden; width: 100vw; height: 100vh; background-image: radial-gradient(circle at center, #1e1b4b 0%, #0b0f19 100%); }
+        #presentation { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+
+        .slide { position: absolute; width: 92%; max-width: 1600px; height: 86%; opacity: 0; transform: scale(0.95) translateY(20px); transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); display: flex; flex-direction: column; justify-content: center; pointer-events: none; }
+        .slide.active { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+
+        h1 { font-size: 3.5rem; color: var(--primary); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+        h2 { font-size: 2rem; margin-bottom: 25px; color: #cbd5e1; }
+        p, li { font-size: 1.5rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 15px; }
+
+        /* SLIDE 0: Cards */
+        .comparison-layout { display: flex; gap: 40px; width: 100%; margin-top: 20px; }
+        .info-card { flex: 1; background: var(--panel-bg); border: 1px solid #334155; border-top: 4px solid var(--whatsapp); padding: 35px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); transform: translateY(40px); opacity: 0; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .info-card:nth-child(2) { border-top-color: var(--accent); }
+        .slide.active .info-card:nth-child(1) { animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.3s; }
+        .slide.active .info-card:nth-child(2) { animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.6s; }
+        .card-header { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; border-bottom: 1px solid #334155; padding-bottom: 20px; }
+        .card-icon { width: 70px; height: 70px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; justify-content: center; align-items: center; padding: 15px; font-size: 2.5rem;}
+        .info-card:nth-child(1) .card-title-box h3 { color: var(--whatsapp); font-size: 2.2rem; }
+        .info-card:nth-child(2) .card-title-box h3 { color: var(--accent); font-size: 2.2rem; }
+        .card-title-box span { font-size: 1.1rem; color: #cbd5e1; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .feature-list { list-style: none; padding: 0; flex: 1; }
+        .feature-list li { font-size: 1.3rem; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 10px; }
+        .feature-list li::before { content: "•"; color: #cbd5e1; font-size: 1.5rem; }
+
+        @keyframes popIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* GENERAL LANDSCAPE BOX */
+        .landscape-box {
+            position: relative; width: 100%; height: 48vh; min-height: 380px; max-height: 600px;
+            background: var(--panel-bg); border-radius: 15px; border: 1px solid #334155; 
+            margin-top: 15px; box-shadow: inset 0 0 40px rgba(0,0,0,0.7); overflow: visible; flex-shrink: 0; 
+        }
+
+        .bg-curve { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        @keyframes dashAnim { to { stroke-dashoffset: -100px; } }
+        .bg-curve path { stroke: #475569; stroke-width: 3px; fill: none; stroke-dasharray: 10px, 10px; animation: dashAnim 4s linear infinite; vector-effect: non-scaling-stroke; }
+
+        /* General Nodes */
+        .icon-circle { font-size: 3.5rem; background: #1e293b; width: 90px; height: 90px; margin: 0 auto; display: flex; justify-content: center; align-items: center; border-radius: 50%; border: 3px solid #334155; transition: border-color 0.4s; box-shadow: 0 0 15px rgba(0,0,0,0.5); position: relative;}
+        .node-label { margin-top: 15px; font-size: 1.2rem; font-weight: bold; color: #cbd5e1; text-align: center; }
+        .desc-box { margin-top: 25px; background: rgba(15, 23, 42, 0.8); border-left: 5px solid var(--primary); padding: 20px; border-radius: 8px; min-height: 100px; font-size: 1.3rem; color: #f8fafc; opacity: 0; transition: opacity 0.5s; z-index: 50;}
+
+        /* CENTERED NODES (LOCKED) */
+        .net-node { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 5; opacity: 0.4; transition: all 0.4s ease; transform: translate(-50%, -50%) scale(1); width: 160px; }
+        .net-node.active-node { opacity: 1 !important; transform: translate(-50%, -50%) scale(1.15) !important; filter: brightness(1.2); }
+        .net-node.active-node .icon-circle { border-color: var(--primary); box-shadow: 0 0 25px rgba(59, 130, 246, 0.8); background: rgba(59, 130, 246, 0.2); }
+        .net-node .node-label { background: #000; padding: 4px 12px; border-radius: 12px; }
+        .net-node.active-node .node-label { color: #f8fafc; border: 1px solid var(--primary); }
+
+        /* DATA PACKETS - CENTERED & GLOWING */
+        .data-packet { 
+            position: absolute; z-index: 100; padding: 10px 20px; border-radius: 30px; font-size: 1.2rem; 
+            font-weight: bold; color: white; display: none; align-items: center; gap: 8px; 
+            transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1), top 0.8s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s, opacity 0.4s; 
+            border: 2px solid rgba(255,255,255,0.3); transform: translate(-50%, -50%) scale(1); 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+        }
+        .data-packet.whatsapp { background: var(--whatsapp); box-shadow: 0 0 25px rgba(37, 211, 102, 0.8); }
+        .data-packet.google { background: var(--google); box-shadow: 0 0 25px rgba(66, 133, 244, 0.8); }
+        .data-packet.alert { background: var(--accent); box-shadow: 0 0 25px rgba(244, 63, 94, 0.8); }
+        .data-packet.footprint { background: #f59e0b; box-shadow: 0 0 25px rgba(245, 158, 11, 0.8); }
+
+        /* SLIDE 1: Info vs Misinfo Animation */
+        .im-landscape { border-color: var(--primary); box-shadow: inset 0 0 40px rgba(59,130,246,0.15); }
+        #imn-src { top: 20%; left: 20%; }
+        #imn-bot { top: 20%; left: 80%; }
+        #imn-user { top: 80%; left: 50%; }
+
+        .im-shield {
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0.5);
+            width: 130px; height: 130px; border: 4px solid var(--primary); border-radius: 50%;
+            background: rgba(59, 130, 246, 0.15); opacity: 0; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: -1; box-shadow: 0 0 30px rgba(59, 130, 246, 0.6), inset 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+        .im-shield.active-shield { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+        /* SLIDE 2: Fact Checking Map */
+        .fc-landscape { border-color: var(--google); box-shadow: inset 0 0 40px rgba(66, 133, 244, 0.15); }
+        #fcn-0 { top: 50%; left: 15%; } 
+        #fcn-1 { top: 20%; left: 50%; } 
+        #fcn-2 { top: 80%; left: 50%; } 
+        #fcn-3 { top: 50%; left: 85%; }
+
+        .flag-box { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); background: var(--accent); padding: 5px 15px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; opacity: 0; transition: opacity 0.3s; white-space: nowrap; z-index: 10; box-shadow: 0 5px 15px rgba(244, 63, 94, 0.5); }
+        .flag-box.safe { background: var(--whatsapp); box-shadow: 0 5px 15px rgba(37, 211, 102, 0.5); }
+
+        /* SLIDE 3: Digital Footprint Map */
+        .df-landscape { border-color: #f59e0b; box-shadow: inset 0 0 40px rgba(245, 158, 11, 0.15); overflow: hidden; }
+        .df-node.active-node .icon-circle { border-color: #f59e0b; box-shadow: 0 0 25px rgba(245, 158, 11, 0.8); background: rgba(245, 158, 11, 0.2); }
+        .df-node.active-node .node-label { border-color: #f59e0b; }
+        
+        #dfn-center { top: 50%; left: 50%; width: 200px;}
+        #dfn-center .icon-circle { width: 120px; height: 120px; font-size: 5rem; border-width: 4px; z-index: 20; }
+        
+        #dfn-1 { top: 15%; left: 20%; }
+        #dfn-2 { top: 85%; left: 20%; }
+        #dfn-3 { top: 15%; left: 80%; }
+        #dfn-4 { top: 85%; left: 80%; }
+
+        .footprint-shadow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 0; height: 0; background: radial-gradient(circle, rgba(245, 158, 11, 0.4) 0%, rgba(0,0,0,0) 70%); border-radius: 50%; z-index: 1; transition: all 1s ease; opacity: 0; }
+
+        /* 📱 RESPONSIVE FALLBACKS */
+        @media (max-width: 950px) {
+            .comparison-layout { flex-direction: column; height: auto; margin-top: 10px; gap: 15px;}
+            .info-card { padding: 15px; margin-bottom: 5px; transform: none !important; }
+            .slide { height: 95%; top: 2.5%; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+            .slide::-webkit-scrollbar { display: none; }
+            .icon-circle { width: 50px; height: 50px; font-size: 2rem; border-width: 2px;}
+            .data-packet { padding: 4px 8px; font-size: 0.9rem; border-radius: 12px;}
+            .desc-box { padding: 15px; min-height: 80px; font-size: 1.1rem; }
+            .net-node { width: 80px; }
+            .node-label { font-size: 0.9rem; margin-top: 8px;}
+            .landscape-box { height: 350px; min-height: 300px; }
+            #dfn-center .icon-circle { width: 70px; height: 70px; font-size: 3rem; }
+            .im-shield { width: 90px; height: 90px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="presentation" onclick="nextSlide()">
+
+        <!-- Slide 0: Fact vs Misinformation (Cards) -->
+        <section class="slide active" id="slide-0">
+            <div style="display:inline-block; background:rgba(59, 130, 246, 0.2); border: 1px solid var(--primary); color: var(--primary); padding: 6px 18px; border-radius: 20px; font-weight: bold; letter-spacing: 1px; margin-bottom: 20px; font-size: 1rem; align-self: flex-start;">MODULE 3.3 : EVALUATING CONTENT</div>
+            <h1 style="margin-top: 0;">Information vs. Misinformation</h1>
+            <h2>How to identify what you can trust</h2>
+            <div class="comparison-layout">
+                <div class="info-card">
+                    <div class="card-header">
+                        <div class="card-icon">✅</div>
+                        <div class="card-title-box"><h3>Reliable Facts</h3><span>Verified Content</span></div>
+                    </div>
+                    <ul class="feature-list">
+                        <li>Has clear, cited sources and author details.</li>
+                        <li>Reported by multiple reputed news agencies.</li>
+                        <li>Neutral tone without emotional manipulation.</li>
+                        <li style="color:var(--whatsapp);"><b>Rule: "Cross-reference before believing."</b></li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <div class="card-header">
+                        <div class="card-icon">⚠️</div>
+                        <div class="card-title-box"><h3>Misinformation</h3><span>Fake News & Deepfakes</span></div>
+                    </div>
+                    <ul class="feature-list">
+                        <li>Clickbait titles designed to trigger anger or fear.</li>
+                        <li>AI-generated images (Deepfakes) or manipulated videos.</li>
+                        <li>Shared primarily via untraceable social media chains.</li>
+                        <li style="color:var(--accent);"><b>Rule: "If it looks too shocking to be true, verify it."</b></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 1: NEW Info vs Misinfo Animation -->
+        <section class="slide" id="slide-1">
+            <h1 style="color: var(--primary);">The Information War</h1>
+            <h2>How Truth and Fake News Spread</h2>
+            <div class="landscape-box im-landscape">
+                <svg class="bg-curve" preserveAspectRatio="none" viewBox="0 0 100 100">
+                    <path d="M 20 20 C 20 50, 50 50, 50 80" stroke="#334155" stroke-width="2" stroke-dasharray="5,5" fill="none"></path>
+                    <path d="M 80 20 C 80 50, 50 50, 50 80" stroke="#334155" stroke-width="2" stroke-dasharray="5,5" fill="none"></path>
+                </svg>
+
+                <div class="data-packet google" id="im-pkt-1">📊 Verified Fact</div>
+                <div class="data-packet alert" id="im-pkt-2">😱 SHOCKING!</div>
+                <div class="data-packet alert" id="im-pkt-3">😡 OUTRAGE!</div>
+                <div class="data-packet alert" id="im-pkt-4">⚠️ VIRAL!</div>
+
+                <div class="net-node im-node" id="imn-src"><div class="icon-circle">🏢</div><div class="node-label">News Agency</div></div>
+                <div class="net-node im-node" id="imn-bot"><div class="icon-circle">🤖</div><div class="node-label">Bot Network</div></div>
+                
+                <div class="net-node im-node" id="imn-user">
+                    <div class="im-shield" id="im-shield"></div>
+                    <div class="icon-circle" id="user-icon">👤</div><div class="node-label">You</div>
+                </div>
+            </div>
+            <div class="desc-box" id="im-desc" style="border-left-color: var(--primary);"></div>
+        </section>
+
+        <!-- Slide 2: Fact-Checking Journey -->
+        <section class="slide" id="slide-2">
+            <h1 style="color: var(--google);">The Fact-Checking Process</h1>
+            <h2>Verifying a viral WhatsApp message</h2>
+            <div class="landscape-box fc-landscape">
+                <svg class="bg-curve" preserveAspectRatio="none" viewBox="0 0 100 100">
+                    <path d="M 15 50 C 30 50, 40 20, 50 20 C 60 20, 70 50, 85 50"></path>
+                    <path d="M 15 50 C 30 50, 40 80, 50 80 C 60 80, 70 50, 85 50"></path>
+                </svg>
+                <div class="data-packet alert" id="fc-packet">📰 Viral Post</div>
+                
+                <div class="net-node fc-node" id="fcn-0">
+                    <div class="flag-box" id="fc-flag">Fake News!</div>
+                    <div class="icon-circle">📱</div><div class="node-label">Your Phone</div>
+                </div>
+                <div class="net-node fc-node" id="fcn-1"><div class="icon-circle">🔍</div><div class="node-label">Reverse Image Search</div></div>
+                <div class="net-node fc-node" id="fcn-2"><div class="icon-circle">🏢</div><div class="node-label">Trusted News Sites</div></div>
+                <div class="net-node fc-node" id="fcn-3"><div class="icon-circle">🧠</div><div class="node-label">Verified Truth</div></div>
+            </div>
+            <div class="desc-box" id="fc-desc" style="border-left-color: var(--google);"></div>
+        </section>
+
+        <!-- Slide 3: Digital Footprint -->
+        <section class="slide" id="slide-3">
+            <h1 style="color: #f59e0b;">Your Digital Footprint</h1>
+            <h2>Every click leaves a permanent trace</h2>
+            <div class="landscape-box df-landscape">
+                <div class="footprint-shadow" id="df-shadow"></div>
+                
+                <!-- Paths pointing to center -->
+                <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <line x1="20" y1="15" x2="50" y2="50" stroke="#475569" stroke-width="2" stroke-dasharray="5,5" />
+                    <line x1="20" y1="85" x2="50" y2="50" stroke="#475569" stroke-width="2" stroke-dasharray="5,5" />
+                    <line x1="80" y1="15" x2="50" y2="50" stroke="#475569" stroke-width="2" stroke-dasharray="5,5" />
+                    <line x1="80" y1="85" x2="50" y2="50" stroke="#475569" stroke-width="2" stroke-dasharray="5,5" />
+                </svg>
+
+                <div class="data-packet footprint" id="df-pkt-1">🌐 Cookies</div>
+                <div class="data-packet footprint" id="df-pkt-2">👍 Likes</div>
+                <div class="data-packet footprint" id="df-pkt-3">📍 GPS Data</div>
+                <div class="data-packet footprint" id="df-pkt-4">🛒 Purchases</div>
+
+                <div class="net-node df-node" id="dfn-1"><div class="icon-circle">💻</div><div class="node-label">Web Surfing</div></div>
+                <div class="net-node df-node" id="dfn-2"><div class="icon-circle">📱</div><div class="node-label">Social Media</div></div>
+                <div class="net-node df-node" id="dfn-3"><div class="icon-circle">🗺️</div><div class="node-label">Maps / Uber</div></div>
+                <div class="net-node df-node" id="dfn-4"><div class="icon-circle">💳</div><div class="node-label">Online Shopping</div></div>
+                
+                <div class="net-node df-node" id="dfn-center"><div class="icon-circle">👤</div><div class="node-label" style="font-size: 1.4rem;">Your Digital Identity</div></div>
+            </div>
+            <div class="desc-box" id="df-desc" style="border-left-color: #f59e0b;"></div>
+        </section>
+
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+
+        // SLIDE 1: Info vs Misinfo Animation Data
+        let imStep = -1;
+        const imData = [
+            { txt: "<b style='color:var(--google);'>1. Reliable Information:</b> A trusted news agency publishes a well-researched article. The tone is neutral and informative." },
+            { txt: "<b style='color:var(--google);'>2. Rational Consumption:</b> You receive the facts. Your response is calm, educated, and rational." },
+            { txt: "<b style='color:var(--accent);'>3. Misinformation Created:</b> A bot network generates a fabricated story designed specifically to trigger strong negative emotions." },
+            { txt: "<b style='color:var(--accent);'>4. The Viral Spread:</b> Fake news uses extreme clickbait (anger/fear) to bypass logic, spreading 6x faster than the truth!" },
+            { txt: "<b style='color:white;'>5. The Shield:</b> Critical thinking is your defense. You pause, verify the source, and the misinformation bounces off." }
+        ];
+        
+        // SLIDE 2: Fact Checking Data
+        let fcStep = -1;
+        const fcData = [
+            { txt: "<b style='color:var(--accent);'>1. The Trigger:</b> You receive a shocking news image on WhatsApp. It makes you emotional." },
+            { txt: "<b style='color:var(--google);'>2. Stop & Search:</b> Instead of forwarding, you upload the image to <i>Google Reverse Image Search</i>." },
+            { txt: "<b style='color:#f59e0b;'>3. Cross-Reference:</b> You simultaneously check recognized local and international news agencies." },
+            { txt: "<b style='color:var(--whatsapp);'>4. Verification:</b> Search reveals the image is 5 years old and from a different country. The news is FAKE." },
+            { txt: "<b style='color:var(--primary);'>5. Manage the Spread:</b> You delete the message, do not forward it, and inform the sender about the misinformation." }
+        ];
+
+        // SLIDE 3: Digital Footprint Data
+        let dfStep = -1;
+        const dfData = [
+            { txt: "<b style='color:#f59e0b;'>1. Passive Footprint:</b> When you browse, websites drop 'Cookies' recording your IP address, device type, and time." },
+            { txt: "<b style='color:#f59e0b;'>2. Active Footprint:</b> Every 'Like', comment, and share on social media builds a profile of your psychological interests." },
+            { txt: "<b style='color:#f59e0b;'>3. Location Data:</b> Ride-sharing and map apps track your physical daily routine." },
+            { txt: "<b style='color:var(--accent);'>4. The Aggregation:</b> Data Brokers collect these individual traces to build a highly accurate, permanent 'Digital Shadow' of you." },
+            { txt: "<b style='color:var(--whatsapp);'>5. Management:</b> Protect yourself by clearing cookies, using private browsing, managing app permissions, and thinking before posting." }
+        ];
+
+        function updateSlides() {
+            slides.forEach((slide, index) => { if (index === currentSlide) slide.classList.add('active'); else slide.classList.remove('active'); });
+
+            // Resets
+            if (currentSlide === 1) {
+                imStep = -1;
+                document.getElementById('im-pkt-1').style.display = 'none';
+                document.getElementById('im-pkt-2').style.display = 'none';
+                document.getElementById('im-pkt-2').style.opacity = '1';
+                document.getElementById('im-pkt-3').style.display = 'none';
+                document.getElementById('im-pkt-3').style.opacity = '1';
+                document.getElementById('im-pkt-4').style.display = 'none';
+                document.getElementById('im-pkt-4').style.opacity = '1';
+                document.getElementById('im-shield').classList.remove('active-shield');
+                document.getElementById('user-icon').style.borderColor = "#334155";
+                document.getElementById('im-desc').innerHTML = "";
+                document.querySelectorAll('.im-node').forEach(n => n.classList.remove('active-node'));
+            }
+            if (currentSlide === 2) { 
+                fcStep = -1; 
+                document.getElementById('fc-packet').style.display = 'none'; 
+                document.getElementById('fc-flag').style.opacity = 0; 
+                document.getElementById('fc-desc').innerHTML = ""; 
+                document.querySelectorAll('.fc-node').forEach(n => n.classList.remove('active-node')); 
+            }
+            if (currentSlide === 3) { 
+                dfStep = -1; 
+                document.getElementById('df-pkt-1').style.display = 'none';
+                document.getElementById('df-pkt-2').style.display = 'none';
+                document.getElementById('df-pkt-3').style.display = 'none';
+                document.getElementById('df-pkt-4').style.display = 'none';
+                document.getElementById('df-shadow').style.width = '0';
+                document.getElementById('df-shadow').style.height = '0';
+                document.getElementById('df-shadow').style.opacity = '0';
+                document.getElementById('df-desc').innerHTML = ""; 
+                document.querySelectorAll('.df-node').forEach(n => n.classList.remove('active-node')); 
+            }
+        }
+
+        // Logic functions
+        function runImStep() {
+            imStep++;
+            const desc = document.getElementById('im-desc');
+            const p1 = document.getElementById('im-pkt-1'); 
+            const p2 = document.getElementById('im-pkt-2'); 
+            const p3 = document.getElementById('im-pkt-3'); 
+            const p4 = document.getElementById('im-pkt-4'); 
+            const shield = document.getElementById('im-shield');
+            const userIcon = document.getElementById('user-icon');
+
+            document.querySelectorAll('.im-node').forEach(n => n.classList.remove('active-node'));
+
+            if (imStep === 0) {
+                document.getElementById('imn-src').classList.add('active-node');
+                p1.style.display = 'flex'; p1.style.left = '20%'; p1.style.top = '20%';
+            } 
+            else if (imStep === 1) {
+                document.getElementById('imn-user').classList.add('active-node');
+                p1.style.left = '50%'; p1.style.top = '80%';
+                userIcon.style.borderColor = "var(--google)";
+                userIcon.style.boxShadow = "0 0 25px rgba(66, 133, 244, 0.6)";
+            }
+            else if (imStep === 2) {
+                p1.style.display = 'none';
+                document.getElementById('imn-bot').classList.add('active-node');
+                p2.style.display = 'flex'; p2.style.left = '80%'; p2.style.top = '20%';
+            }
+            else if (imStep === 3) {
+                document.getElementById('imn-user').classList.add('active-node');
+                userIcon.style.borderColor = "var(--accent)";
+                userIcon.style.boxShadow = "0 0 35px rgba(244, 63, 94, 0.8)";
+                p2.style.left = '50%'; p2.style.top = '80%';
+                
+                p3.style.display = 'flex'; p3.style.left = '80%'; p3.style.top = '20%';
+                p4.style.display = 'flex'; p4.style.left = '80%'; p4.style.top = '20%';
+                
+                setTimeout(() => { p3.style.left = '30%'; p3.style.top = '60%'; }, 50);
+                setTimeout(() => { p4.style.left = '70%'; p4.style.top = '60%'; }, 50);
+            }
+            else if (imStep === 4) {
+                document.getElementById('imn-user').classList.add('active-node');
+                shield.classList.add('active-shield');
+                userIcon.style.borderColor = "var(--primary)";
+                userIcon.style.boxShadow = "0 0 25px rgba(59, 130, 246, 0.8)";
+                
+                p2.style.top = '100%'; p2.style.opacity = '0';
+                p3.style.top = '90%'; p3.style.left = '5%'; p3.style.opacity = '0';
+                p4.style.top = '90%'; p4.style.left = '95%'; p4.style.opacity = '0';
+            }
+
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = imData[imStep].txt; desc.style.opacity = 1; }, 300); 
+        }
+
+        function runFcStep() { 
+            fcStep++; 
+            const pkt = document.getElementById('fc-packet'); 
+            const desc = document.getElementById('fc-desc'); 
+            const flag = document.getElementById('fc-flag');
+            
+            document.querySelectorAll('.fc-node').forEach(n => n.classList.remove('active-node')); 
+            
+            if(fcStep === 0) { 
+                document.getElementById('fcn-0').classList.add('active-node');
+                pkt.style.display = 'flex'; 
+                pkt.className = 'data-packet alert';
+                pkt.innerHTML = "📰 Viral Post";
+                pkt.style.left = "15%"; pkt.style.top = "50%";
+            } 
+            else if(fcStep === 1) { 
+                document.getElementById('fcn-1').classList.add('active-node');
+                pkt.className = 'data-packet google';
+                pkt.innerHTML = "🔍 Checking Image...";
+                pkt.style.left = "50%"; pkt.style.top = "20%";
+            } 
+            else if(fcStep === 2) { 
+                document.getElementById('fcn-1').classList.add('active-node');
+                document.getElementById('fcn-2').classList.add('active-node');
+                pkt.className = 'data-packet footprint';
+                pkt.innerHTML = "📰 Checking News...";
+                pkt.style.left = "50%"; pkt.style.top = "80%";
+            } 
+            else if(fcStep === 3) { 
+                document.getElementById('fcn-3').classList.add('active-node');
+                pkt.className = 'data-packet whatsapp';
+                pkt.innerHTML = "✅ Verified False";
+                pkt.style.left = "85%"; pkt.style.top = "50%";
+            } 
+            else if(fcStep === 4) { 
+                document.getElementById('fcn-0').classList.add('active-node');
+                pkt.style.left = "15%"; pkt.style.top = "50%";
+                setTimeout(() => {
+                    pkt.style.display = 'none';
+                    flag.style.opacity = 1;
+                }, 800);
+            } 
+            
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = fcData[fcStep].txt; desc.style.opacity = 1; }, 300); 
+        }
+
+        function runDfStep() { 
+            dfStep++; 
+            const desc = document.getElementById('df-desc'); 
+            const centerNode = document.getElementById('dfn-center');
+            const shadow = document.getElementById('df-shadow');
+
+            document.querySelectorAll('.df-node').forEach(n => n.classList.remove('active-node')); 
+            centerNode.classList.add('active-node');
+
+            if(dfStep === 0) { 
+                document.getElementById('dfn-1').classList.add('active-node');
+                const p1 = document.getElementById('df-pkt-1');
+                p1.style.display = 'flex'; p1.style.left = '20%'; p1.style.top = '15%';
+                setTimeout(() => { p1.style.left = '50%'; p1.style.top = '50%'; shadow.style.opacity = 1; shadow.style.width = '100px'; shadow.style.height = '100px'; }, 50);
+            } 
+            else if(dfStep === 1) { 
+                document.getElementById('dfn-2').classList.add('active-node');
+                const p2 = document.getElementById('df-pkt-2');
+                p2.style.display = 'flex'; p2.style.left = '20%'; p2.style.top = '85%';
+                setTimeout(() => { p2.style.left = '50%'; p2.style.top = '50%'; shadow.style.width = '200px'; shadow.style.height = '200px'; }, 50);
+            } 
+            else if(dfStep === 2) { 
+                document.getElementById('dfn-3').classList.add('active-node');
+                const p3 = document.getElementById('df-pkt-3');
+                p3.style.display = 'flex'; p3.style.left = '80%'; p3.style.top = '15%';
+                setTimeout(() => { p3.style.left = '50%'; p3.style.top = '50%'; shadow.style.width = '300px'; shadow.style.height = '300px'; }, 50);
+            } 
+            else if(dfStep === 3) { 
+                document.getElementById('dfn-4').classList.add('active-node');
+                const p4 = document.getElementById('df-pkt-4');
+                p4.style.display = 'flex'; p4.style.left = '80%'; p4.style.top = '85%';
+                setTimeout(() => { p4.style.left = '50%'; p4.style.top = '50%'; shadow.style.width = '450px'; shadow.style.height = '450px'; }, 50);
+                setTimeout(() => {
+                    document.getElementById('df-pkt-1').style.display = 'none';
+                    document.getElementById('df-pkt-2').style.display = 'none';
+                    document.getElementById('df-pkt-3').style.display = 'none';
+                    document.getElementById('df-pkt-4').style.display = 'none';
+                }, 800);
+            }
+            else if (dfStep === 4) {
+                document.querySelectorAll('.df-node').forEach(n => n.classList.add('active-node'));
+                centerNode.querySelector('.icon-circle').style.borderColor = "var(--whatsapp)";
+                centerNode.querySelector('.icon-circle').style.boxShadow = "0 0 35px rgba(37, 211, 102, 0.8)";
+                shadow.style.background = "radial-gradient(circle, rgba(37, 211, 102, 0.2) 0%, rgba(0,0,0,0) 70%)";
+            }
+            
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = dfData[dfStep].txt; desc.style.opacity = 1; }, 300); 
+        }
+
+        function nextSlide() {
+            if (currentSlide === 1 && imStep < imData.length - 1) { runImStep(); return; }
+            if (currentSlide === 2 && fcStep < fcData.length - 1) { runFcStep(); return; }
+            if (currentSlide === 3 && dfStep < dfData.length - 1) { runDfStep(); return; }
+            
+            if (currentSlide < slides.length - 1) { currentSlide++; updateSlides(); }
+        }
+
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateSlides(); } }
+
+        document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); else if (e.key === 'ArrowLeft') prevSlide(); });
+        updateSlides();
+    </script>
+</body>
+</html>
